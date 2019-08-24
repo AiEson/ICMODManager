@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/addMod"
+            android:checked="true"
+            android:icon="@drawable/baseline_add_circle_black_18dp"
+            android:title="添加MOD" />
+        <!--<item-->
+            <!--android:id="@+id/onlineDown"-->
+            <!--android:icon="@drawable/baseline_vertical_align_bottom_black_18dp"-->
+            <!--android:title="在线下载" />-->
+        <item
+            android:id="@+id/addicmap"
+            android:icon="@drawable/baseline_add_circle_black_18dp"
+            android:title="添加IC地图" />
+        <item
+            android:id="@+id/addmcmap"
+            android:icon="@drawable/baseline_add_circle_black_18dp"
+            android:title="添加MC地图" />
+        <item
+            android:id="@+id/gotoweb"
+            android:icon="@drawable/baseline_public_black_18dp"
+            android:checkable="false"
+            android:title="中文社区" />
+    </group>
+    <item android:title="操作">
+        <menu>
+            <item
+                android:id="@+id/reload"
+                android:icon="@drawable/baseline_replay_black_18dp"
+                android:title="刷新列表" />
+            <item
+                android:id="@+id/openic"
+                android:icon="@drawable/baseline_open_in_new_black_24dp"
+                android:title="进入IC"
+                />
+            <item
+                android:id="@+id/openmc"
+                android:icon="@drawable/baseline_open_in_new_black_24dp"
+                android:title="进入MC"
+                />
+            <!--<item-->
+                <!--android:id="@+id/join1"-->
+                <!--android:icon="@drawable/qqlogo"-->
+                <!--android:title="加入根据地1(推荐）" />-->
+            <!--<item-->
+                <!--android:id="@+id/join2"-->
+                <!--android:icon="@drawable/qqlogo"-->
+                <!--android:title="加入根据地2(技术宅进）" />-->
+        </menu>
+    </item>
+    <!--<item android:title="其它">-->
+    <!--<menu>-->
+    <!--<item-->
+    <!--android:id="@+id/nav_share"-->
+    <!--android:icon="@drawable/ic_menu_share"-->
+    <!--android:title="分享MOD" />-->
+    <!--<item-->
+    <!--android:id="@+id/nav_send"-->
+    <!--android:icon="@drawable/ic_menu_send"-->
+    <!--android:title="发送本软件" />-->
+    <!--</menu>-->
+    <!--</item>-->
+
+</menu>

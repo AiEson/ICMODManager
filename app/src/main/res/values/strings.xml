@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">ICMOD管理器</string>
+    <string name="title_activity_main">安装MOD...</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">ICMOD管理器</string>
+    <string name="nav_header_subtitle">BY WvT Studio\n青铜火机和电吹风</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="emptyMOD">这里空空的~\n点击下方加号添加第一个MOD吧</string>
+</resources>
