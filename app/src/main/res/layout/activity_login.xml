@@ -5,6 +5,7 @@
     android:fitsSystemWindows="true">
 
     <LinearLayout
+        android:id="@+id/login_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -12,11 +13,13 @@
         android:paddingLeft="24dp"
         android:paddingRight="24dp">
 
-        <ImageView android:src="@drawable/wvtlogo"
+        <ImageView
+            android:id="@+id/loginImage"
             android:layout_width="wrap_content"
             android:layout_height="72dp"
+            android:layout_gravity="center_horizontal"
             android:layout_marginBottom="24dp"
-            android:layout_gravity="center_horizontal" />
+            android:src="@drawable/wvtlogo" />
 
         <!-- Email Label -->
         <android.support.design.widget.TextInputLayout
@@ -28,7 +31,7 @@
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:inputType="textEmailAddress"
-                      android:hint="Account"/>
+                      android:hint="邮箱"/>
         </android.support.design.widget.TextInputLayout>
 
         <!-- Password Label -->
@@ -41,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:hint="Password"/>
+                android:hint="密码"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.v7.widget.AppCompatButton
@@ -60,6 +63,14 @@
                   android:text="莫得账号？点我注册"
                   android:gravity="center"
                   android:textSize="16dip"/>
+
+        <TextView android:id="@+id/login_message"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="莫得账号？点我注册"
+            android:gravity="center"
+            android:textSize="14sp"/>
 
     </LinearLayout>
 </ScrollView>

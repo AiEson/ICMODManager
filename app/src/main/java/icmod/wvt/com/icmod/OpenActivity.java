@@ -6,10 +6,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -94,8 +96,32 @@ public class OpenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.open_loading);
+        initFinalValuable();
         mContext = this;
         checkPermission();
+        Log.e("TAG", OpenActivity.this.getExternalFilesDir(null).toString());
+    }
+
+    protected void initFinalValuable() {
+
+        final String MODDir = Environment.getExternalStorageDirectory().toString() + File.separator + "games" + File.separator + "com.mojang" + File.separator + "mods",
+                MCMAPDir = Environment.getExternalStorageDirectory().toString() + File.separator + "games" + File.separator + "com.mojang" + File.separator + "minecraftWorlds",
+                ICMAPDir = Environment.getExternalStorageDirectory().toString() + File.separator + "games" + File.separator + "com.mojang" + File.separator + "innercoreWorlds",
+                WvTWorkDir = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT",
+                MODTestDir = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT" + File.separator + "Test",
+                MODDataPath = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT" + File.separator + "AllModInfo.json",
+                DownLoadPath = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT" + File.separator + "Download",
+                NetModData = DownLoadPath + File.separator + "NetModData.json",
+                UserInfo = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT" + File.separator + "UserInfo.json";
+        FinalValuable.MODDir = MODDir;
+        FinalValuable.MCMAPDir = MCMAPDir;
+        FinalValuable.ICMAPDir = ICMAPDir;
+        FinalValuable.WvTWorkDir = WvTWorkDir;
+        FinalValuable.MODTestDir = MODTestDir;
+        FinalValuable.MODDataPath = MODDataPath;
+        FinalValuable.DownLoadPath = DownLoadPath;
+        FinalValuable.NetModData = NetModData;
+        FinalValuable.UserInfo = UserInfo;
     }
 
     private void checkPermission() {

@@ -6,13 +6,14 @@ import java.io.File;
 
 public class FinalValuable {
     public static final int MOD = 1, MCMAP = 2,
-        ICMAP = 3, TESTMAP = 23, RES = 4, Online = 5;
-    public static final String MODDir = Environment.getExternalStorageDirectory().toString() + File.separator + "games" + File.separator + "com.mojang" + File.separator + "mods",
-        MCMAPDir = Environment.getExternalStorageDirectory().toString() + File.separator + "games" + File.separator + "com.mojang" + File.separator + "minecraftWorlds",
-        ICMAPDir = Environment.getExternalStorageDirectory().toString() + File.separator + "games" + File.separator + "com.mojang" + File.separator + "innercoreWorlds",
-        WvTWorkDir = Environment.getExternalStorageDirectory() + File.separator + "WvT",
-        MODTestDir = Environment.getExternalStorageDirectory() + File.separator + "WvT" + File.separator + "Test",
-        MODDataPath = Environment.getExternalStorageDirectory() + File.separator + "WvT" + File.separator + "AllModInfo.json",
-        DownLoadPath = Environment.getExternalStorageDirectory() + File.separator + "WvT" + File.separator + "Download",
-        NetModData = DownLoadPath + File.separator + "NetModData.json";
+        ICMAP = 3, TESTMAP = 23, RES = 4, Online = 5, LoginError = 7, LoginSuccess = 8, LoginEmpty = 9, LoginNouser = 10, LoginNoInternet = 11;
+    public static String MODDir = null;
+    public static String MCMAPDir = null;
+    public static String ICMAPDir = null;
+    public static String WvTWorkDir = null;
+    public static String MODTestDir = null;
+    public static String MODDataPath = null;
+    public static String DownLoadPath = null;
+    public static String NetModData =null;
+    public static String UserInfo = null;
 }

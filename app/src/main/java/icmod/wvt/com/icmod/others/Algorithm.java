@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,6 +37,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -75,6 +79,32 @@ public class Algorithm {
         }
 
         return true;
+    }
+
+    public static boolean emailFormat(String email)
+    {
+        boolean tag = true;
+        final String pattern1 = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+        final Pattern pattern = Pattern.compile(pattern1);
+        final Matcher mat = pattern.matcher(email);
+        if (!mat.find()) {
+            tag = false;
+        }
+        return tag;
+    }
+
+    public static String postRequestWithHttpClient(final String username, final String password, final String type) {
+        final String[] ret = {""};
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+//                ret[0] = ret2;
+                Log.e("TAG", ret[0] + "");
+            }
+        }).start();
+
+        return ret[0];
     }
 
     public static MAP getNativeMAPClass(String path, int type) {

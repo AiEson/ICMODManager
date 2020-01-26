@@ -1,32 +1,24 @@
 package icmod.wvt.com.icmod;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.media.Image;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.CardView;
-import android.text.Layout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,8 +30,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
 import android.widget.*;
 
 import com.liulishuo.filedownloader.BaseDownloadTask;
@@ -48,22 +38,27 @@ import com.liulishuo.filedownloader.FileDownloader;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
+import org.json.JSONObject;
+
 import icmod.wvt.com.icmod.others.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import static android.support.v4.app.FrameMetricsAggregator.ANIMATION_DURATION;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    FloatingActionButton fab;
+    static FloatingActionButton fab;
     TextView mainText;
+    static TextView sidebarUserName;
     String path;
     ListView listView;
+    static ImageView sidebarImageView;
     LocalMODAdapter localMODAdapter;
     LocalMAPAdapter localMAPAdapter;
     ProgressDialog pDialog;
@@ -71,7 +66,9 @@ public class MainActivity extends AppCompatActivity
     int type;
     File modP, mapP;
     Toolbar toolbar;
+    static Boolean haveUserData = false;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         modP = new File(FinalValuable.MODDir);
@@ -98,6 +95,7 @@ public class MainActivity extends AppCompatActivity
                 textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 listView.setPadding(10, 10, 10, 5);
                 final File defPath = new File(Environment.getExternalStorageDirectory().toString());
+
                 final List<String> fileList = Algorithm.orderByName(defPath.toString());
                 listView.setAdapter(new FileAdapter(MainActivity.this, R.layout.select_item, fileList, defPath, textView));
                 alertDialogWindow = alertDialog.setView(layout)
@@ -194,6 +192,9 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View headerView = navigationView.getHeaderView(0);
+        sidebarImageView = headerView.findViewById(R.id.sidebarImageView);
+        sidebarUserName = headerView.findViewById(R.id.userName);
         FileDownloader.setup(this);
         listView = findViewById(R.id.mainListView);
         localMODAdapter = new LocalMODAdapter(this, R.layout.mod_item, flashNativeMOD());
@@ -213,7 +214,7 @@ public class MainActivity extends AppCompatActivity
                         public void onClick(DialogInterface dialogInterface, int i) {
                             Intent intent = new Intent(
                                     Intent.ACTION_VIEW,
-                                    Uri.parse("http://106.14.83.184/MinecraftCamouflage.apk")
+                                    Uri.parse("http://adodoz.cn/MinecraftCamouflage.apk")
                             );
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
@@ -248,9 +249,124 @@ public class MainActivity extends AppCompatActivity
         }
         Bitmap bitmap = Algorithm.getBitmapFromRes(MainActivity.this, R.drawable.no_logo);
         lruCacheUtils.savePicToMemory("null", bitmap);
+        flashUser();
     }
 
-    public void print(String string, int longg) {
+    public static void flashUser()
+    {
+        try {
+            File userData = new File(FinalValuable.UserInfo);
+            if (userData.exists()) {
+                haveUserData = true;
+                JSONObject json = new JSONObject(Algorithm.readFile(userData));
+                JSONObject userInfo = json.getJSONObject("user_info");
+                sidebarUserName.setText("欢迎您，" + userInfo.getString("user_name"));
+                load_avatar loadAvatar = new load_avatar(userInfo.getString("user_avatar"));
+                loadAvatar.execute();
+            } else {
+                haveUserData = false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static class load_avatar extends AsyncTask<Void, Void, Bitmap>
+    {
+        String url;
+        load_avatar(String url)
+        {
+            this.url = url;
+        }
+
+        @Override
+        protected Bitmap doInBackground(Void... voids) {
+            Bitmap ret = getImageBitmap(url);
+            return ret;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            sidebarImageView.setImageBitmap(bitmap);
+        }
+
+        public Bitmap getImageBitmap(String url) {
+            Bitmap bitmap = null;
+            URL imgUrl = null;
+            try {
+                imgUrl = new URL(url);
+                HttpURLConnection conn = (HttpURLConnection) imgUrl
+                        .openConnection();
+                conn.setDoInput(true);
+                conn.connect();
+                InputStream is = conn.getInputStream();
+                bitmap = BitmapFactory.decodeStream(is);
+                is.close();
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+    }
+
+
+    public void sidebarImageViewClick(View view){
+        if (haveUserData) {
+            try{
+                final File userData = new File(FinalValuable.UserInfo);
+                JSONObject json = new JSONObject(Algorithm.readFile(userData));
+                JSONObject userInfo = json.getJSONObject("user_info");
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("用户信息")
+                        .setMessage("ID：" + userInfo.getInt("user_id") + "\n名称：" + userInfo.getString("user_name"))
+                        .setNegativeButton("返回", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setPositiveButton("注销登录", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                sidebarImageView.setImageBitmap(Algorithm.getBitmapFromRes(MainActivity.this, R.drawable.baseline_account_circle_black_24dp));
+                                sidebarUserName.setText("点击头像以登录");
+                                Algorithm.deleteFile(userData);
+                                haveUserData = false;
+                            }
+                        })
+                        .create();
+                alertDialog.show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        else {
+            Intent loginActivity = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(loginActivity);
+        }
+    }
+
+    public static MessageCallback messageCallback = new MessageCallback() {
+        @Override
+        public void onMessage(String message) {
+            if (message.equals("ok")){
+                flashUser();
+            }
+            else {
+                print("登陆失败惹！", Snackbar.LENGTH_LONG);
+            }
+        }
+    };
+    public interface MessageCallback{
+        public void onMessage(String message);
+    }
+
+    protected static void print(String string, int longg) {
         Snackbar.make(fab, string, longg)
                 .setAction("Action", null).show();
     }
@@ -336,6 +452,7 @@ public class MainActivity extends AppCompatActivity
         return ret;
     }
 
+    @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -351,9 +468,6 @@ public class MainActivity extends AppCompatActivity
                             listView.setAdapter(localMODAdapter);
                             break;
                         case FinalValuable.MCMAP:
-                            localMAPAdapter = new LocalMAPAdapter(MainActivity.this, R.layout.map_item, flashNativeMAP());
-                            listView.setAdapter(localMAPAdapter);
-                            break;
                         case FinalValuable.ICMAP:
                             localMAPAdapter = new LocalMAPAdapter(MainActivity.this, R.layout.map_item, flashNativeMAP());
                             listView.setAdapter(localMAPAdapter);
@@ -442,7 +556,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.gotoweb:
                 Intent intent = new Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse("http://adodoz.cn/download")
+                        Uri.parse("http://adodoz.cn")
                 );
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
@@ -457,9 +571,6 @@ public class MainActivity extends AppCompatActivity
                         listView.setAdapter(localMODAdapter);
                         break;
                     case FinalValuable.MCMAP:
-                        localMAPAdapter = new LocalMAPAdapter(this, R.layout.map_item, flashNativeMAP());
-                        listView.setAdapter(localMAPAdapter);
-                        break;
                     case FinalValuable.ICMAP:
                         localMAPAdapter = new LocalMAPAdapter(this, R.layout.map_item, flashNativeMAP());
                         listView.setAdapter(localMAPAdapter);
