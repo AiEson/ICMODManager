@@ -7,10 +7,6 @@
             android:checked="true"
             android:icon="@drawable/baseline_add_circle_black_18dp"
             android:title="添加MOD" />
-        <!--<item-->
-            <!--android:id="@+id/onlineDown"-->
-            <!--android:icon="@drawable/baseline_vertical_align_bottom_black_18dp"-->
-            <!--android:title="在线下载" />-->
         <item
             android:id="@+id/addicmap"
             android:icon="@drawable/baseline_add_circle_black_18dp"
@@ -20,9 +16,17 @@
             android:icon="@drawable/baseline_add_circle_black_18dp"
             android:title="添加MC地图" />
         <item
+            android:id="@+id/addicres"
+            android:icon="@drawable/baseline_add_circle_black_18dp"
+            android:title="添加IC材质" />
+        <item
+            android:id="@+id/onlineDown"
+            android:icon="@drawable/baseline_vertical_align_bottom_black_18dp"
+            android:title="在线下载" />
+        <item
             android:id="@+id/gotoweb"
-            android:icon="@drawable/baseline_public_black_18dp"
             android:checkable="false"
+            android:icon="@drawable/baseline_public_black_18dp"
             android:title="中文社区" />
     </group>
     <item android:title="操作">
@@ -34,21 +38,19 @@
             <item
                 android:id="@+id/openic"
                 android:icon="@drawable/baseline_open_in_new_black_24dp"
-                android:title="进入IC"
-                />
+                android:title="进入IC" />
             <item
                 android:id="@+id/openmc"
                 android:icon="@drawable/baseline_open_in_new_black_24dp"
-                android:title="进入MC"
-                />
-            <!--<item-->
-                <!--android:id="@+id/join1"-->
-                <!--android:icon="@drawable/qqlogo"-->
-                <!--android:title="加入根据地1(推荐）" />-->
-            <!--<item-->
-                <!--android:id="@+id/join2"-->
-                <!--android:icon="@drawable/qqlogo"-->
-                <!--android:title="加入根据地2(技术宅进）" />-->
+                android:title="进入MC" />
+            <item
+                android:id="@+id/join"
+                android:icon="@drawable/qqlogo"
+                android:title="加入根据地" />
+            <item
+                android:id="@+id/donate"
+                android:icon="@drawable/round_attach_money_black_18dp"
+                android:title="捐赠作者" />
         </menu>
     </item>
     <!--<item android:title="其它">-->

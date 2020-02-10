@@ -7,14 +7,15 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,8 @@ public class OpenActivity extends AppCompatActivity {
     List<MOD> modList = new ArrayList<>();
     Boolean dirSiMOD = false;
     List<File>notModDir = new ArrayList<>();
+    String gamesNomediaPath;
+    String resPackWvTPath;
 
     private static final int PERMISSION_REQUEST = 0xa00;
     // 声明一个数组，用来存储所有需要动态申请的权限
@@ -48,6 +51,8 @@ public class OpenActivity extends AppCompatActivity {
             try {
                 File testDir = new File(FinalValuable.MODTestDir);
                 Algorithm.deleteFile(testDir);
+                File downloadDir = new File(FinalValuable.DownLoadPath);
+                Algorithm.deleteFile(downloadDir);
                 testDir.mkdirs();
                 File allMod = new File(FinalValuable.MODDir);
                 File allModList[] = allMod.listFiles();
@@ -77,6 +82,13 @@ public class OpenActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            if (!Algorithm.isNetworkAvailable(OpenActivity.this)) {
+                File file111 = new File(FinalValuable.UserInfo);
+                if (file111.exists()) {
+                    Algorithm.deleteFile(file111);
+                    Toast.makeText(OpenActivity.this, "您的登录信息已清除，请重新登陆", Toast.LENGTH_LONG).show();
+                }
+            }
 
             Intent intent = new Intent(OpenActivity.this, MainActivity.class);
             if (!dirSiMOD)
@@ -85,8 +97,10 @@ public class OpenActivity extends AppCompatActivity {
             }
             intent.putExtra("hasNoMod", notModDir.size() == 0);
 //            Toast.makeText(OpenActivity.this, dirSiMOD + "", 1).show();
-            if (new File(FinalValuable.NetModData).isFile())
-                Algorithm.deleteFile(new File(FinalValuable.NetModData));
+            if (new File(FinalValuable.NetModDataGw).isFile())
+                Algorithm.deleteFile(new File(FinalValuable.NetModDataGw));
+            if (new File(FinalValuable.NetModDataHhz).isFile())
+                Algorithm.deleteFile(new File(FinalValuable.NetModDataHhz));
             startActivity(intent);
             OpenActivity.this.finish();
         }
@@ -98,6 +112,13 @@ public class OpenActivity extends AppCompatActivity {
         setContentView(R.layout.open_loading);
         initFinalValuable();
         mContext = this;
+        resPackWvTPath = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT" + File.separator + ".nomedia";
+        gamesNomediaPath = Environment.getExternalStorageDirectory().toString() + File.separator + "games" + File.separator + "com.mojang" + File.separator + ".nomedia";
+        try {
+            createNomedia();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         checkPermission();
         Log.e("TAG", OpenActivity.this.getExternalFilesDir(null).toString());
     }
@@ -111,8 +132,16 @@ public class OpenActivity extends AppCompatActivity {
                 MODTestDir = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT" + File.separator + "Test",
                 MODDataPath = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT" + File.separator + "AllModInfo.json",
                 DownLoadPath = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT" + File.separator + "Download",
-                NetModData = DownLoadPath + File.separator + "NetModData.json",
-                UserInfo = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT" + File.separator + "UserInfo.json";
+                ResDir = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT" + File.separator + "ResPack",
+                NetModDataGw = DownLoadPath + File.separator + "NetModDataGw.json",
+                NetModDataHhz = DownLoadPath + File.separator + "NetModDataHhz.json",
+                UserInfo = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT" + File.separator + "UserInfo.json",
+                QQGroupJson = OpenActivity.this.getExternalFilesDir(null) + File.separator + "WvT" + File.separator + "QQGroup.json",
+                QQDownload = Environment.getExternalStorageDirectory().toString() + File.separator + "tencent" + File.separator + "QQfile_recv",
+                WeChatDownload = Environment.getExternalStorageDirectory().toString() + File.separator + "tencent" + File.separator + "MicroMsg" + File.separator + "Download",
+                BaiduNetDiskDownload = Environment.getExternalStorageDirectory().toString() + File.separator + "BaiduNetdisk",
+                SystemDownload = Environment.getExternalStorageDirectory().toString() + File.separator + "Download",
+                ICResDir = Environment.getExternalStorageDirectory().toString() + File.separator + "games" + File.separator + "com.mojang" + File.separator + "resource_packs" + File.separator + "innercore-resources";
         FinalValuable.MODDir = MODDir;
         FinalValuable.MCMAPDir = MCMAPDir;
         FinalValuable.ICMAPDir = ICMAPDir;
@@ -120,8 +149,25 @@ public class OpenActivity extends AppCompatActivity {
         FinalValuable.MODTestDir = MODTestDir;
         FinalValuable.MODDataPath = MODDataPath;
         FinalValuable.DownLoadPath = DownLoadPath;
-        FinalValuable.NetModData = NetModData;
+        FinalValuable.NetModDataGw = NetModDataGw;
+        FinalValuable.NetModDataHhz = NetModDataHhz;
         FinalValuable.UserInfo = UserInfo;
+        FinalValuable.ICResDir = ICResDir;
+        FinalValuable.QQGroupJson = QQGroupJson;
+        FinalValuable.QQDownload = QQDownload;
+        FinalValuable.WeChatDownload = WeChatDownload;
+        FinalValuable.BaiduNetDiskDownload = BaiduNetDiskDownload;
+        FinalValuable.SystemDownload = SystemDownload;
+        FinalValuable.ResDir = ResDir;
+    }
+
+    private void createNomedia() throws IOException {
+        File noMediaWvT = new File(resPackWvTPath);
+        File noMediaGame = new File(gamesNomediaPath);
+        if (!noMediaGame.exists())
+            noMediaGame.createNewFile();
+        if(!noMediaWvT.exists())
+            noMediaWvT.createNewFile();
     }
 
     private void checkPermission() {

@@ -2,7 +2,7 @@ package icmod.wvt.com.icmod.others;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v4.util.LruCache;
+import androidx.collection.LruCache;
 import android.util.Log;
 
 public class LruCacheUtils {
@@ -60,8 +60,6 @@ public class LruCacheUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
         return bitmap;
     }
 
@@ -81,6 +79,18 @@ public class LruCacheUtils {
                 Log.d("CacheUtils", "mMemoryCache.size()" + mLruCache.size());
             }
             mLruCache = null;
+        }
+    }
+
+    public void remove(String key) {
+        if (mLruCache != null) {
+            try {
+                if (mLruCache.get(key) != null) {
+                    mLruCache.remove(key);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

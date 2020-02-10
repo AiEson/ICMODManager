@@ -4,15 +4,14 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
 
 import icmod.wvt.com.icmod.others.Algorithm;
 import icmod.wvt.com.icmod.others.FinalValuable;
@@ -100,7 +98,6 @@ public class LoginActivity extends AppCompatActivity {
             progressDialog.setMessage("正在验证您的账户，请稍后...");
             progressDialog.setCancelable(false);
             progressDialog.show();
-            
         }
 
         @Override
@@ -108,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
             String ret2 = null;
             String Resultms = null;
             String lines;
-            StringBuffer response = new StringBuffer("");
+            StringBuilder response = new StringBuilder("");
             HttpURLConnection connection = null;
             try {
                 URL url = new URL("https://adodoz.cn/app_login.php");
@@ -143,7 +140,6 @@ public class LoginActivity extends AppCompatActivity {
                     connection.disconnect();
                 }
             }
-            Log.e("TAG", ret2);
             JSONObject retJson = null;
             try {
                 retJson = new JSONObject(ret2);
@@ -156,25 +152,28 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
             super.onPostExecute(jsonObject);
-            progressDialog.dismiss();
-            if (jsonObject.isNull("code"))
-            {
-                JSONObject userInfo = null;
-                try {
-                    userInfo = jsonObject.getJSONObject("user_info");
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            try {
+                progressDialog.dismiss();
+                if (jsonObject.isNull("code")) {
+                    JSONObject userInfo = null;
+                    try {
+                        userInfo = jsonObject.getJSONObject("user_info");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        Toast.makeText(LoginActivity.this, "登陆成功，欢迎您 " + userInfo.getString("user_name"), Toast.LENGTH_LONG).show();
+                        Algorithm.writeFile(FinalValuable.UserInfo, jsonObject.toString());
+                    } catch (JSONException | IOException e) {
+                        e.printStackTrace();
+                    }
+                    LoginActivity.this.finish();
+                } else {
+                    print("登陆失败！请检查您的账户和密码再试", Snackbar.LENGTH_LONG);
                 }
-                try {
-                    Toast.makeText(LoginActivity.this, "登陆成功，欢迎您 " + userInfo.getString("user_name") , Toast.LENGTH_LONG).show();
-                    Algorithm.writeFile(FinalValuable.UserInfo, jsonObject.toString());
-                    MainActivity.messageCallback.onMessage("ok");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                LoginActivity.this.finish();
+            } catch (Exception e) {
+                e.printStackTrace();
+                print("登陆失败！服务器错误", Snackbar.LENGTH_LONG);
             }
         }
     }
